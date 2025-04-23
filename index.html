@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Menu</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo-container">
+                <img id="restaurant-logo" src="https://via.placeholder.com/150" alt="Restaurant Logo">
+            </div>
+            <div class="header-controls">
+                <div class="theme-selector">
+                    <select id="theme-select">
+                        <option value="default">Default Theme</option>
+                        <option value="dark">Dark Theme</option>
+                        <option value="light">Light Theme</option>
+                        <option value="warm">Warm Theme</option>
+                        <option value="cool">Cool Theme</option>
+                    </select>
+                </div>
+                <div class="cart-icon" id="cart-button">
+                    🛒 <span id="cart-count">0</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="menu-container">
+                <div class="category-tabs" id="category-tabs"></div>
+                <div class="menu-items" id="menu-items"></div>
+            </div>
+        </main>
+
+        <div class="cart-modal" id="cart-modal">
+            <div class="cart-content">
+                <div class="cart-header">
+                    <h2>Your Order</h2>
+                    <button class="close-cart" id="close-cart">&times;</button>
+                </div>
+                <div class="cart-items" id="cart-items"></div>
+                <div class="cart-total">
+                    Total: $<span id="cart-total">0.00</span>
+                </div>
+                <div class="customer-info">
+                    <h3>Your Information</h3>
+                    <form id="order-form">
+                        <input type="text" placeholder="Your Name" required>
+                        <input type="tel" placeholder="Phone Number" required>
+                        <textarea placeholder="Special Instructions"></textarea>
+                        <button type="submit">Place Order</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
