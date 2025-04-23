@@ -72,121 +72,90 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function fetchMenuData() {
-        // In a real app, this would be a fetch to your API
-        // For demo purposes, we'll use mock data
-        const mockData = {
-            categories: [
-                { id: 1, name: 'Appetizers' },
-                { id: 2, name: 'Main Courses' },
-                { id: 3, name: 'Desserts' },
-                { id: 4, name: 'Drinks' }
-            ],
-            tags: [
-                { id: 'vegetarian', name: 'Vegetarian' },
-                { id: 'vegan', name: 'Vegan' },
-                { id: 'glutenFree', name: 'Gluten Free' },
-                { id: 'spicy', name: 'Spicy' },
-                { id: 'lactoseFree', name: 'Lactose Free' }
-            ],
-            items: [
-                {
-                    id: 1,
-                    name: 'Bruschetta',
-                    description: 'Toasted bread topped with tomatoes, garlic, and fresh basil.',
-                    price: 8.99,
-                    categoryId: 1,
-                    image: 'https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-                    tags: {
-                        vegetarian: true,
-                        vegan: false,
-                        glutenFree: false,
-                        spicy: false,
-                        lactoseFree: true
+    async function fetchMenuData() {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/data.json');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const jsonData = await response.json();
+    
+            // Transform the JSON data into the format your code expects
+            const transformedData = {
+                categories: jsonData.categories,
+                tags: jsonData.tags,
+                items: jsonData.items.map(item => {
+                    // Convert array of tag IDs to boolean tag properties
+                    const tagsObj = {};
+                    jsonData.tags.forEach(tag => {
+                        tagsObj[tag.name.toLowerCase().replace(' ', '')] = item.tags.includes(tag.id);
+                    });
+                    
+                    return {
+                        ...item,
+                        tags: tagsObj
+                    };
+                })
+            };
+    
+            // Process the data
+            menuData = transformedData;
+            renderCategories();
+            renderMenuItems();
+        } catch (error) {
+            console.error('Error fetching menu data:', error);
+            // Fallback to mock data if the fetch fails
+            const mockData = {
+                categories: [
+                    { id: 1, name: 'Appetizers' },
+                    { id: 2, name: 'Main Courses' },
+                    { id: 3, name: 'Desserts' },
+                    { id: 4, name: 'Drinks' }
+                ],
+                tags: [
+                    { id: 1, name: 'Vegetarian' },
+                    { id: 2, name: 'Vegan' },
+                    { id: 3, name: 'Gluten Free' },
+                    { id: 4, name: 'Spicy' },
+                    { id: 5, name: 'Lactose Free' }
+                ],
+                items: [
+                    {
+                        id: 1,
+                        name: 'Bruschetta',
+                        description: 'Toasted bread topped with tomatoes, garlic, and fresh basil.',
+                        price: 8.99,
+                        categoryId: 1,
+                        image: 'https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                        tags: {
+                            vegetarian: true,
+                            vegan: false,
+                            glutenFree: false,
+                            spicy: false,
+                            lactoseFree: true
+                        }
+                    },
+                    {
+                        id: 2,
+                        name: 'Margherita Pizza',
+                        description: 'Classic pizza with tomato sauce, mozzarella, and basil.',
+                        price: 12.99,
+                        categoryId: 2,
+                        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+                        tags: {
+                            vegetarian: true,
+                            vegan: false,
+                            glutenFree: false,
+                            spicy: false,
+                            lactoseFree: false
+                        }
                     }
-                },
-                {
-                    id: 2,
-                    name: 'Margherita Pizza',
-                    description: 'Classic pizza with tomato sauce, mozzarella, and basil.',
-                    price: 12.99,
-                    categoryId: 2,
-                    image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-                    tags: {
-                        vegetarian: true,
-                        vegan: false,
-                        glutenFree: false,
-                        spicy: false,
-                        lactoseFree: false
-                    }
-                },
-                {
-                    id: 3,
-                    name: 'Chicken Alfredo',
-                    description: 'Fettuccine pasta with creamy Alfredo sauce and grilled chicken.',
-                    price: 14.99,
-                    categoryId: 2,
-                    image: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-                    tags: {
-                        vegetarian: false,
-                        vegan: false,
-                        glutenFree: false,
-                        spicy: false,
-                        lactoseFree: false
-                    }
-                },
-                {
-                    id: 4,
-                    name: 'Chocolate Lava Cake',
-                    description: 'Warm chocolate cake with a molten center, served with vanilla ice cream.',
-                    price: 7.99,
-                    categoryId: 3,
-                    image: 'https://images.unsplash.com/photo-1564355808539-22fda35bed7e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-                    tags: {
-                        vegetarian: true,
-                        vegan: false,
-                        glutenFree: false,
-                        spicy: false,
-                        lactoseFree: false
-                    }
-                },
-                {
-                    id: 5,
-                    name: 'Vegan Burger',
-                    description: 'Plant-based burger with all the fixings on a whole grain bun.',
-                    price: 11.99,
-                    categoryId: 2,
-                    image: 'https://images.unsplash.com/photo-1559314809-0d155014e29e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-                    tags: {
-                        vegetarian: true,
-                        vegan: true,
-                        glutenFree: false,
-                        spicy: false,
-                        lactoseFree: true
-                    }
-                },
-                {
-                    id: 6,
-                    name: 'Iced Tea',
-                    description: 'Refreshing homemade iced tea with lemon.',
-                    price: 3.49,
-                    categoryId: 4,
-                    image: 'https://images.unsplash.com/photo-1558160074-4d7d8bdf4256?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
-                    tags: {
-                        vegetarian: true,
-                        vegan: true,
-                        glutenFree: true,
-                        spicy: false,
-                        lactoseFree: true
-                    }
-                }
-            ]
-        };
-
-        // Process the data
-        menuData = mockData;
-        renderCategories();
-        renderMenuItems();
+                ]
+            };
+            menuData = mockData;
+            renderCategories();
+            renderMenuItems();
+        }
     }
 
     function renderCategories() {
